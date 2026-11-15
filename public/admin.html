@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>이송 콜 관리자</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon" aria-hidden="true">+</span>
+      <div>
+        <h1>관리자</h1>
+        <p class="sub" id="sysLine">이송단 승인 · 전체 콜 현황</p>
+      </div>
+    </div>
+    <button id="logoutBtn" class="call-btn" type="button" hidden>로그아웃</button>
+  </header>
+
+  <main>
+    <form id="loginForm" class="card" hidden>
+      <div class="field">
+        <label for="adminPassword">관리자 비밀번호</label>
+        <input id="adminPassword" type="password" autocomplete="current-password" required />
+        <span class="hint">브라우저 탭을 닫으면 자동으로 로그아웃됩니다.</span>
+      </div>
+      <button type="submit" class="btn primary">로그인</button>
+    </form>
+
+    <div id="adminView" hidden>
+      <nav class="tabs" role="tablist">
+        <button class="tab active" data-tab="calls" type="button">콜 현황 <span id="callCount" class="badge">0</span></button>
+        <button class="tab" data-tab="providers" type="button">이송단 <span id="pendingCount" class="badge">0</span></button>
+      </nav>
+
+      <section id="tab-calls" class="panel active">
+        <div id="staleBanner" class="stale-banner" hidden></div>
+        <div class="list-tools">
+          <select id="statusFilter">
+            <option value="">전체 상태</option>
+            <option>배차대기</option>
+            <option>배차완료</option>
+            <option>이송중</option>
+            <option>완료</option>
+            <option>취소</option>
+          </select>
+          <button id="exportBtn" class="btn ghost" type="button">CSV 내보내기</button>
+        </div>
+        <div id="callList" class="list"></div>
+        <p id="callEmpty" class="empty">접수된 콜이 없습니다.</p>
+      </section>
+
+      <section id="tab-providers" class="panel">
+        <div id="providerList" class="list"></div>
+        <p id="providerEmpty" class="empty">가입한 이송단이 없습니다. 이송단에게 <a href="provider.html">provider.html</a> 주소를 알려 주세요.</p>
+      </section>
+    </div>
+  </main>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script src="common.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

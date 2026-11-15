@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>이송 진행 상황</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon" aria-hidden="true">+</span>
+      <div>
+        <h1>이송 진행 상황</h1>
+        <p class="sub" id="ticket">접수번호 확인 중…</p>
+      </div>
+    </div>
+    <a class="call-btn" href="./">새 요청</a>
+  </header>
+
+  <div class="alert-119">
+    상태가 나빠지면 기다리지 말고 즉시 <a href="tel:119"><strong>119</strong></a>에 신고하세요.
+  </div>
+
+  <main>
+    <section class="card track-card" id="trackCard">
+      <div class="steps" id="steps">
+        <div class="step-item" data-s="배차대기"><span>1</span>이송단 찾는 중</div>
+        <div class="step-item" data-s="배차완료"><span>2</span>배정 · 출동 준비</div>
+        <div class="step-item" data-s="이송중"><span>3</span>이송 중</div>
+        <div class="step-item" data-s="완료"><span>4</span>완료</div>
+      </div>
+      <h2 id="headline" class="track-headline">불러오는 중…</h2>
+      <p id="subline" class="hint"></p>
+
+      <div id="staleBox" class="stale-box" hidden>
+        <strong id="staleTitle">아직 수락한 이송단이 없습니다</strong>
+        <p>관리자와 이송단에 다시 알렸습니다. 계속 기다리셔도 되고, 아래 방법도 함께 써 보세요.</p>
+        <ul>
+          <li>환자 상태가 나빠지면 <a href="tel:119"><strong>119</strong></a>에 바로 신고하세요.</li>
+          <li>잘 아는 이송업체가 있으면 직접 전화해 보세요. 연결되면 이 요청은 취소해 주세요.</li>
+        </ul>
+      </div>
+
+      <div id="providerBox" class="provider-box" hidden>
+        <div class="provider-name" id="pvName"></div>
+        <div class="provider-meta" id="pvMeta"></div>
+        <a id="pvCall" class="btn primary" href="#">이송단에 전화하기</a>
+      </div>
+
+      <dl class="track-info" id="info"></dl>
+
+      <button id="cancelBtn" class="btn danger" type="button" hidden>요청 취소</button>
+      <p class="hint">이 화면은 자동으로 새로고침됩니다. 이 주소를 저장해 두면 나중에 다시 볼 수 있습니다.</p>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script src="common.js"></script>
+  <script src="track.js"></script>
+</body>
+</html>

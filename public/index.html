@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>구급차 이송 요청</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon" aria-hidden="true">+</span>
+      <div>
+        <h1>사설구급차 이송 요청</h1>
+        <p class="sub">접수하면 서울 이송단 중 가장 먼저 수락한 곳이 출동합니다</p>
+      </div>
+    </div>
+    <a class="call-btn" href="provider.html">이송단</a>
+  </header>
+
+  <div class="alert-119">
+    생명이 위급한 응급상황(심정지·호흡곤란·의식없음)은 즉시 <a href="tel:119"><strong>119</strong></a>에 신고하세요.
+  </div>
+
+  <main>
+    <p id="lastTrack" class="last-track" hidden></p>
+
+    <details class="card fee-guide" id="feeGuide">
+      <summary><strong>💳 구급차 이용 요금 안내 (법정요금)</strong></summary>
+      <div class="fee-cards">
+        <div class="fee-card"><span>일반구급차 · 10km 이내</span><strong>40,000원</strong><small>초과 1km당 1,500원</small></div>
+        <div class="fee-card"><span>특수구급차 · 10km 이내</span><strong>95,500원</strong><small>초과 1km당 2,300원</small></div>
+      </div>
+      <div class="table-wrap">
+        <table class="fee-table">
+          <thead><tr><th>구분</th><th>의료기관·이송업체 등</th><th>비영리법인</th></tr></thead>
+          <tbody>
+            <tr><td>일반 기본요금 (10km)</td><td>40,000원</td><td>26,600원</td></tr>
+            <tr><td>일반 추가 (1km)</td><td>1,500원</td><td>1,000원</td></tr>
+            <tr><td>특수 기본요금 (10km)</td><td>95,500원</td><td>63,600원</td></tr>
+            <tr><td>특수 추가 (1km)</td><td>2,300원</td><td>1,500원</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-wrap">
+        <table class="fee-table">
+          <thead><tr><th>할증 · 대기</th><th>기준</th></tr></thead>
+          <tbody>
+            <tr><td>평일 야간</td><td>18:00 ~ 다음날 09:00</td></tr>
+            <tr><td>토요일 · 공휴일(일요일 포함)</td><td>전 시간</td></tr>
+            <tr><td>할증률</td><td>기본·추가요금에 각각 20% 가산</td></tr>
+            <tr><td>병원 인계 대기</td><td>도착 후 30분 경과 시부터 10분당 6,000원</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="fee-notes">
+        <li>이송거리는 환자가 구급차에 <strong>실제로 탑승한 거리</strong>입니다.</li>
+        <li><strong>119구급차는 거리와 관계없이 무료</strong>입니다. 생명이 위급한 상황은 119를 이용하세요.</li>
+        <li>이 사이트의 이송단은 「의료기관·이송업체 등」 요금이 적용됩니다.</li>
+      </ul>
+      <p class="hint">출처: 「응급의료에 관한 법률 시행규칙」 제11조 및 [별표 3] 이송처치료의 기준 (2026. 7. 13. 개정)</p>
+    </details>
+    <!-- 이송 요청 -->
+    <section id="tab-request">
+      <form id="requestForm" novalidate>
+
+        <fieldset class="card">
+          <legend><span class="step">1</span>긴급도 · 출동 시간</legend>
+          <div class="seg" role="radiogroup">
+            <label><input type="radio" name="urgency" value="긴급" /><span class="urgent">긴급 (지금 바로)</span></label>
+            <label><input type="radio" name="urgency" value="일반" checked /><span>일반 이송</span></label>
+          </div>
+          <div class="seg" role="radiogroup">
+            <label><input type="radio" name="when" value="즉시" checked /><span>즉시 출동</span></label>
+            <label><input type="radio" name="when" value="예약" /><span>예약</span></label>
+          </div>
+          <div class="field" id="reserveField" hidden>
+            <label for="reserveAt">예약 일시 <em>*</em></label>
+            <input type="datetime-local" id="reserveAt" name="reserveAt" />
+          </div>
+          <label class="check"><input type="checkbox" name="roundTrip" /> 왕복 이송 (진료 후 귀가 포함)</label>
+        </fieldset>
+
+        <fieldset class="card">
+          <legend><span class="step">2</span>요청자 정보</legend>
+          <div class="grid">
+            <div class="field">
+              <label for="reqName">요청자 이름 <em>*</em></label>
+              <input id="reqName" name="reqName" required autocomplete="name" />
+            </div>
+            <div class="field">
+              <label for="reqPhone">연락처 <em>*</em></label>
+              <input id="reqPhone" name="reqPhone" type="tel" inputmode="tel" placeholder="010-0000-0000" required />
+            </div>
+          </div>
+          <div class="field">
+            <label for="reqRelation">환자와의 관계</label>
+            <select id="reqRelation" name="reqRelation">
+              <option>보호자(가족)</option>
+              <option>본인</option>
+              <option>병원 직원</option>
+              <option>요양원·요양병원 직원</option>
+              <option>기타</option>
+            </select>
+          </div>
+        </fieldset>
+
+        <fieldset class="card">
+          <legend><span class="step">3</span>환자 인적사항</legend>
+          <div class="grid">
+            <div class="field">
+              <label for="ptName">환자 이름 <em>*</em></label>
+              <input id="ptName" name="ptName" required />
+            </div>
+            <div class="field">
+              <label for="ptAge">나이 <em>*</em></label>
+              <input id="ptAge" name="ptAge" type="number" inputmode="numeric" min="0" max="130" required />
+            </div>
+          </div>
+          <div class="grid">
+            <div class="field">
+              <label>성별 <em>*</em></label>
+              <div class="seg small">
+                <label><input type="radio" name="ptSex" value="남" required /><span>남</span></label>
+                <label><input type="radio" name="ptSex" value="여" /><span>여</span></label>
+              </div>
+            </div>
+            <div class="field">
+              <label for="ptWeight">체중(대략, kg)</label>
+              <input id="ptWeight" name="ptWeight" type="number" inputmode="numeric" min="0" placeholder="들것 인원 산정용" />
+            </div>
+          </div>
+          <label class="check"><input type="checkbox" name="guardianRide" /> 보호자 동승</label>
+        </fieldset>
+
+        <fieldset class="card">
+          <legend><span class="step">4</span>출발지 (환자 현재 위치)</legend>
+          <div class="field">
+            <label for="fromType">장소 구분</label>
+            <select id="fromType" name="fromType">
+              <option>자택</option>
+              <option>병원</option>
+              <option>요양병원·요양원</option>
+              <option>기타</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="fromAddr">주소 / 병원명 <em>*</em></label>
+            <div class="inline">
+              <input id="fromAddr" name="fromAddr" placeholder="예) 서울 양천구 목동동로 233 / OO병원" required />
+              <button type="button" id="geoBtn" class="btn ghost">현재 위치</button>
+            </div>
+            <input type="hidden" id="fromGeo" name="fromGeo" />
+            <small id="geoStatus" class="hint"></small>
+          </div>
+          <div class="field">
+            <label for="fromDetail">상세 위치</label>
+            <input id="fromDetail" name="fromDetail" placeholder="동·호수 / 병동·병실 (예: 본관 7층 712호)" />
+          </div>
+          <div class="field">
+            <label>엘리베이터</label>
+            <div class="seg small">
+              <label><input type="radio" name="elevator" value="있음" checked /><span>있음</span></label>
+              <label><input type="radio" name="elevator" value="없음(계단)" /><span>없음(계단)</span></label>
+              <label><input type="radio" name="elevator" value="모름" /><span>모름</span></label>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="card">
+          <legend><span class="step">5</span>환자 상태</legend>
+          <div class="field">
+            <label for="ptCondition">진단명 / 주요 증상 <em>*</em></label>
+            <textarea id="ptCondition" name="ptCondition" rows="3" placeholder="예) 뇌경색 후 편마비, 퇴원 후 전원 / 낙상 후 고관절 통증" required></textarea>
+          </div>
+          <div class="field">
+            <label>의식 상태</label>
+            <div class="seg small wrap">
+              <label><input type="radio" name="conscious" value="명료" checked /><span>명료</span></label>
+              <label><input type="radio" name="conscious" value="기면(졸림)" /><span>기면(졸림)</span></label>
+              <label><input type="radio" name="conscious" value="혼미" /><span>혼미</span></label>
+              <label><input type="radio" name="conscious" value="반응없음" /><span>반응없음</span></label>
+            </div>
+          </div>
+          <div class="field">
+            <label>이동 방법</label>
+            <div class="seg small wrap">
+              <label><input type="radio" name="mobility" value="보행 가능" /><span>보행 가능</span></label>
+              <label><input type="radio" name="mobility" value="휠체어" /><span>휠체어</span></label>
+              <label><input type="radio" name="mobility" value="들것(누워서)" checked /><span>들것(누워서)</span></label>
+            </div>
+          </div>
+          <div class="field">
+            <label>필요 장비 · 처치 (해당 항목 모두 선택)</label>
+            <div class="chips">
+              <label><input type="checkbox" name="equip" value="산소" /><span>산소</span></label>
+              <label><input type="checkbox" name="equip" value="석션" /><span>석션</span></label>
+              <label><input type="checkbox" name="equip" value="수액 유지" /><span>수액 유지</span></label>
+              <label><input type="checkbox" name="equip" value="기관절개관" /><span>기관절개관</span></label>
+              <label><input type="checkbox" name="equip" value="인공호흡기" /><span>인공호흡기</span></label>
+              <label><input type="checkbox" name="equip" value="L-tube/콧줄" /><span>L-tube/콧줄</span></label>
+              <label><input type="checkbox" name="equip" value="소변줄" /><span>소변줄</span></label>
+              <label><input type="checkbox" name="equip" value="격리 필요(감염)" /><span>격리 필요(감염)</span></label>
+            </div>
+          </div>
+          <div class="field" id="o2Field" hidden>
+            <label for="o2Flow">산소 유량 (L/min)</label>
+            <input id="o2Flow" name="o2Flow" type="number" inputmode="decimal" min="0" step="0.5" />
+          </div>
+          <details class="vitals">
+            <summary>활력징후 입력 (알고 있으면)</summary>
+            <div class="grid four">
+              <div class="field"><label for="bp">혈압</label><input id="bp" name="bp" placeholder="120/80" /></div>
+              <div class="field"><label for="hr">맥박</label><input id="hr" name="hr" type="number" inputmode="numeric" /></div>
+              <div class="field"><label for="spo2">SpO₂ %</label><input id="spo2" name="spo2" type="number" inputmode="numeric" /></div>
+              <div class="field"><label for="bt">체온 ℃</label><input id="bt" name="bt" type="number" inputmode="decimal" step="0.1" /></div>
+            </div>
+          </details>
+        </fieldset>
+
+        <fieldset class="card">
+          <legend><span class="step">6</span>도착지</legend>
+          <div class="field">
+            <label for="toAddr">도착 병원명 / 주소 <em>*</em></label>
+            <input id="toAddr" name="toAddr" placeholder="예) OO대학교병원 응급실 / 자택 주소" required />
+          </div>
+          <details class="er-box">
+            <summary>응급실 실시간 남은 병상 보기 <small>(국립중앙의료원)</small></summary>
+            <div class="er-search">
+              <select id="erSido" aria-label="시·도"></select>
+              <input id="erSigungu" placeholder="구·시·군 (예: 양천구)" aria-label="구·시·군" />
+              <button type="button" id="erBtn" class="btn ghost">조회</button>
+            </div>
+            <small id="erStatus" class="hint"></small>
+            <ul id="erList" class="er-list"></ul>
+          </details>
+          <div class="grid">
+            <div class="field">
+              <label for="toDept">진료과 · 병동</label>
+              <input id="toDept" name="toDept" placeholder="예) 신경과 외래, 입원 병동" />
+            </div>
+            <div class="field">
+              <label for="toTime">병원 예약 시간</label>
+              <input id="toTime" name="toTime" type="time" />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="card">
+          <legend><span class="step">7</span>구급차 종류 · 예상 요금</legend>
+          <div class="field">
+            <label>구급차 종류</label>
+            <div class="seg small">
+              <label><input type="radio" name="ambType" value="일반" checked /><span>일반구급차</span></label>
+              <label><input type="radio" name="ambType" value="특수" /><span>특수구급차</span></label>
+            </div>
+            <small class="hint">특수구급차: 중환자 이송용(인공호흡기 등 장비, 응급구조사 동승). 잘 모르면 일반으로 두고 이송단과 통화로 정하셔도 됩니다.</small>
+            <small id="ambSuggest" class="hint suggest" hidden></small>
+          </div>
+          <div class="grid">
+            <div class="field">
+              <label for="distanceKm">예상 이송거리 (km)</label>
+              <input id="distanceKm" name="distanceKm" type="number" inputmode="decimal" min="0" max="500" step="0.1" placeholder="모르면 비워 두세요" />
+              <small class="hint"><a id="distanceLink" href="https://map.kakao.com" target="_blank" rel="noopener">카카오맵에서 거리 확인</a></small>
+            </div>
+            <div class="field">
+              <label>&nbsp;</label>
+              <label class="check"><input type="checkbox" name="holiday" /> 출동일이 공휴일 (일요일은 자동)</label>
+            </div>
+          </div>
+          <div id="feeBox" class="fee-box" aria-live="polite"></div>
+        </fieldset>
+
+        <fieldset class="card">
+          <legend><span class="step">8</span>기타 전달사항</legend>
+          <textarea name="memo" rows="3" placeholder="주차 위치, 공동현관 비밀번호, 챙겨야 할 서류(소견서·영상CD) 등"></textarea>
+          <label class="check consent">
+            <input type="checkbox" name="consent" required />
+            <span>이송을 위해 위 개인정보·건강정보를 수집·이용하는 데 동의합니다. <em>*</em></span>
+          </label>
+        </fieldset>
+
+        <div class="actions">
+          <button type="button" id="resetBtn" class="btn ghost">초기화</button>
+          <button type="submit" class="btn primary">이송 요청 접수</button>
+        </div>
+      </form>
+    </section>
+
+  </main>
+
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <script src="common.js"></script>
+  <script src="fee.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
